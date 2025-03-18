@@ -1,35 +1,18 @@
 package api.auth.controllers;
 
-import api.auth.models.SearchRequest;
 import api.auth.models.UserModel;
 import api.auth.services.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
 public class UserController {
     @Autowired
     private UserService userService;
-
-    @PostMapping("/users")
-    public ResponseEntity<List<UserModel>> getUsers(@RequestBody SearchRequest request) {
-        try {
-            List<UserModel> users = userService.getUsers(request);
-            if (users == null || users.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-            return ResponseEntity.ok(users);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Collections.singletonList(new UserModel()));
-        }
-    }
 
     @PostMapping("/users")
     public ResponseEntity<Object> getUsers(
@@ -59,6 +42,17 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/status/{id}")
+    public ResponseEntity<String> changeStatus(@PathVariable("id") Long id) {
+        try {
+            userService.changeStatus(id.intValue());
+            return ResponseEntity.ok("User status changed successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Error changing user status: " + e.getMessage());
         }
     }
 }
