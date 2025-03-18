@@ -65,6 +65,7 @@ public class UserService {
         }
     }
 
+    // Change status ACTIVE or DELETED
     public void changeStatus(Integer id) {
         try {
             String sql = "CALL sp_chane_status(?)";
